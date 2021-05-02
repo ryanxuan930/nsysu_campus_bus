@@ -1,0 +1,113 @@
+* {
+    font-family: 'Noto Sans TC', sans-serif;
+    margin: 0;
+    border: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+@font-face {
+    font-family: 'Material Icons';
+    font-style: normal;
+    font-weight: 400;
+    src: url(https://example.com/MaterialIcons-Regular.eot); /* For IE6-8 */
+    src: 
+        local('Material Icons'),
+        local('MaterialIcons-Regular'),
+        url(https://example.com/MaterialIcons-Regular.woff2) format('woff2'),
+        url(https://example.com/MaterialIcons-Regular.woff) format('woff'),
+        url(https://example.com/MaterialIcons-Regular.ttf) format('truetype');
+}
+.material-icons{
+    vertical-align:-18%
+}
+
+html{
+    height: 100%;
+    background-color: #f5f5f5;
+}
+
+.banner{
+    width: 100%;
+    margin: 0;
+    padding: 10px;
+    background-color: rgb(10,132,255);
+    z-index: 10;
+}
+#title{
+    width: 280px;
+    margin: auto;
+    text-align: center;
+    font-size: 18pt;
+    color: white;
+}
+
+.campus_list{
+    margin: 10px;
+    padding: 15px;
+    background-color: white;
+    font-size: 16pt;
+}
+.campus_list_name{
+    text-align: center;
+    padding: 1px 5px;
+    border: rgb(10,132,255) 2px solid;
+    color: rgb(10,132,255);
+    border-radius: 5px;
+    display: inline-block;
+    width: 130px;
+}
+.campus_list_name, .campus_list_time, .campus_list_dest{
+    margin-right: 5%;
+}
+.campus_list_arrow{
+    color: #424242;
+    margin: 0 10px;
+}
+
+.navigator{
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    padding: 5px 0 10px 0;
+    background-color:white;
+    z-index: 10;
+    overflow: auto;
+}
+.navigator a{
+    text-decoration: none;
+    font-size: 14pt;
+    float: left;
+    width: 25%;
+    text-align: center;
+    color: black;
+    padding: 3px;
+}
+.navigator a:hover {
+    color: #2196F3;
+    transition-duration: 0.3s;
+}
+.navigator a.active {
+    color: rgb(10,132,255);
+}
+
+.blur{
+    opacity: 0.5;
+}
+
+.reded{
+    color: #B71C1C;
+}
+
+.blinking{
+    animation: blinking 2s infinite;
+}
+@keyframes blinking{
+	0% {box-shadow: 1px 1px 5px #757575;}
+	50%{box-shadow: 1px 1px 5px #BDBDBD;}
+    100% {box-shadow: 1px 1px 5px #757575;}
+}
+
+.shadow{
+    box-shadow: 1px 1px 5px #BDBDBD;
+}

@@ -1,0 +1,125 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.gstatic.com"> 
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/main.css">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<script src="https://unpkg.com/vue@next"></script>
+<title>NSYSU Campus Bus</title>
+</head>
+<body>
+    <div id="app">
+        <app-title></app-title>
+        <app-content></app-content>
+        <app-navigator></app-navigator>
+    </div>
+    <script>
+        const app = Vue.createApp({});
+        var lang = "jp";
+        current = 0;
+
+        function langFunc(langCode, langDict){
+            var langNum;
+            switch(langCode){
+                case "tw" : langNum = 0; break;
+                case "cn" : langNum = 1; break;
+                case "en" : langNum = 2; break;
+                case "jp" : langNum = 3; break;
+                default : langNum = 0;
+            }
+            return langDict[langNum];
+        }
+
+        app.component('app-title',{
+            template: '<div class="banner shadow"><div id="title">{{title}}</div></div>',
+            data(){
+                var dict = ["校園公車資訊","校园公交信息","Campus Bus Information","学内連絡バスインフォ"]
+                return{
+                    title: langFunc(lang,dict)
+                }
+            }
+        });
+
+        app.component('app-content',{
+            template: '<div id="content_box"><div class="content"><campus-bus-list v-for="i in length" :parent-i="i" /></div></div>',
+            data(){
+                listLength = 10;
+                return {
+                    length: listLength
+                }
+            },
+            components:{
+                'campus-bus-list': {
+                    template:'<div class="campus_list shadow" :class="{blur:parentI<5 ? true : false, blinking:parentI==5 ? true : false}"><span class="campus_list_name">{{name}} {{parentI}}</span><span class="campus_list_time">{{time}}</span><span class="campus_list_dept">{{dept}}</span><span class="campus_list_arrow"><span class="material-icons">arrow_forward</span></span><span class="campus_list_dest">{{dest}}</span><span class="campus_list_stop" :class="{reded:isRed}">{{stop}}</span></div>',
+                    props:["parentI"],
+                    data(){
+                        var dict_name = ["校","校","Campus","Campus"];
+                        var dict_dept = ["行政大樓","行政大楼","Administration Building","管理棟"];
+                        var dict_dest = ["H棟宿舍","H棟宿舍","H Dormitory","H ドーミトリ"];
+                        var dict_stop = ["本日未行駛","本日未行驶","Not in service","運休"];
+                        return {
+                            name : langFunc(lang,dict_name),
+                            time : "00:00",
+                            dept : langFunc(lang,dict_dept),
+                            dest : langFunc(lang,dict_dest),
+                            stop : langFunc(lang,dict_stop),
+                            isRed : true
+                        }
+                    }
+                }
+            }
+        });
+
+        app.component('app-navigator',{
+            template: '<div class="navigator shadow"><navigator></navigator></div>',
+            components:{
+                'navigator': {
+                    template: '<campus-button></campus-button><bus-button></bus-button><timetable-button></timetable-button><config-button></config-button>',
+                    components: {
+                        'campus-button':{
+                            template: '<a href=""><span class="material-icons">school</span><br>{{msg}}</a>',
+                            data(){
+                                var dict = ["校園公車","校园公交","Campus Bus","学内連絡バス"];
+                                return{
+                                    msg : langFunc(lang,dict)
+                                }
+                            }
+                        },
+                        'bus-button':{
+                            template: '<a href=""><span class="material-icons">directions_bus</span><br>{{msg}}</a>',
+                            data(){
+                                var dict = ["市區公車","市区公交","City Bus","市内バス"];
+                                return{
+                                    msg : langFunc(lang,dict)
+                                }
+                            }
+                        },
+                        'timetable-button':{
+                            template: '<a href=""><span class="material-icons">departure_board</span><br>{{msg}}</a>',
+                            data(){
+                                var dict = ["時刻表","时刻表","Timetable","時刻表"];
+                                return{
+                                    msg : langFunc(lang,dict)
+                                }
+                            }
+                        },
+                        'config-button':{
+                            template: '<a href=""><span class="material-icons">settings</span><br>{{msg}}</a>',
+                            data(){
+                                var dict = ["設定","设置","Settings","設定"];
+                                return{
+                                    msg : langFunc(lang,dict)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        app.mount('#app');
+    </script>
+</body>
+</html>
