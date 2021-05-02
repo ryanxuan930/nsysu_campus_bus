@@ -18,7 +18,7 @@
     </div>
     <script>
         const app = Vue.createApp({});
-        var lang = "jp";
+        var lang = "en";
         current = 0;
 
         function langFunc(langCode, langDict){
@@ -53,7 +53,7 @@
             },
             components:{
                 'campus-bus-list': {
-                    template:'<div class="campus_list shadow" :class="{blur:parentI<5 ? true : false, blinking:parentI==5 ? true : false}"><span class="campus_list_name">{{name}} {{parentI}}</span><span class="campus_list_time">{{time}}</span><span class="campus_list_dept">{{dept}}</span><span class="campus_list_arrow"><span class="material-icons">arrow_forward</span></span><span class="campus_list_dest">{{dest}}</span><span class="campus_list_stop" :class="{reded:isRed}">{{stop}}</span></div>',
+                    template:'<div class="campus_list shadow" :class="{blur:parentI<5 ? true : false, blinking:parentI==5 ? true : false}"><span class="campus_list_name">{{name}} {{parentI}}</span><span class="campus_list_time">{{time}}</span><br v-if="isPhone"><span class="campus_list_dept">{{dept}}</span><span class="campus_list_arrow"><span class="material-icons">arrow_forward</span></span><span class="campus_list_dest">{{dest}}</span><span class="campus_list_stop" :class="{reded:isRed}">{{stop}}</span></div>',
                     props:["parentI"],
                     data(){
                         var dict_name = ["校","校","Campus","Campus"];
@@ -66,7 +66,8 @@
                             dept : langFunc(lang,dict_dept),
                             dest : langFunc(lang,dict_dest),
                             stop : langFunc(lang,dict_stop),
-                            isRed : true
+                            isRed : true,
+                            isPhone : screen.width<700? true : false
                         }
                     }
                 }
