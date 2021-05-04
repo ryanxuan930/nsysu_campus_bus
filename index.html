@@ -8,6 +8,7 @@
 <link rel="stylesheet" href="css/main.css">
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <script src="https://unpkg.com/vue@next"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <title>NSYSU Campus Bus</title>
 </head>
 <body>
@@ -17,9 +18,38 @@
         <app-navigator></app-navigator>
     </div>
     <script>
-        const app = Vue.createApp({});
-        var lang = "en";
-        current = 0;
+        const app = Vue.createApp({
+            template: '<app-title /><app-content :page="current" /><app-navigator @update="changePage" />',
+            data(){
+                return{
+                    current: 0,
+                    lang: "tw"
+                }
+            },
+            provide(){
+                return{
+                    current: this.current,
+                    lang: this.lang
+                }
+            },
+            methods:{
+                changePage(val){
+                    this.current = val;
+                }
+            }
+        });
+        var campusList, listLength=0;
+        var stopNameList = {
+            "Administration Square":{"tw":"行政大樓","cn":"行政大楼","en":"Administration Building","jp":"行政棟"},
+            "Administration Building":{"tw":"行政大樓","cn":"行政大楼","en":"Administration Building","jp":"行政棟"},
+            "Dorm H":{"tw":"H棟宿舍","cn":"H栋宿舍","en":"H Dormitory","jp":"H ドーミトリー"},
+            "H Dormitory":{"tw":"H棟宿舍","cn":"H栋宿舍","en":"H Dormitory","jp":"H ドーミトリー"},
+            "Activity Center":{"tw":"活動中心","cn":"活动中心","en":"Activity Center","jp":"アクティビティセンター"},
+            "Wuling Road":{"tw":"武嶺路口","cn":"武岭路口","en":"Wuling Road","jp":"武嶺交差点"},
+            "College of Liberal Arts":{"tw":"文學院","cn":"文学院","en":"College of Liberal Arts","jp":"文学院"},
+            "MRT Sizihwan Station (LRT Hamasen Station)":{"tw":"捷運西子灣站 (輕軌哈瑪星站)","cn":"捷运西子湾站(轻轨哈玛星站)","en":"MRT Sihziwan Station (LRT Hamasen Station)","jp":"MRT西子湾駅(LRT哈瑪星駅)"},
+            "未行駛":{"tw":"未行駛","cn":"未行驶","en":"Not in service","jp":"運休"},
+        };
 
         function langFunc(langCode, langDict){
             var langNum;
@@ -36,83 +66,231 @@
         app.component('app-title',{
             template: '<div class="banner shadow"><div id="title">{{title}}</div></div>',
             data(){
+                var lang = this.lang;
                 var dict = ["校園公車資訊","校园公交信息","Campus Bus Information","学内連絡バスインフォ"]
-                return{
+                return {
                     title: langFunc(lang,dict)
                 }
-            }
+            },
+            inject: ['lang']
         });
 
         app.component('app-content',{
-            template: '<div id="content_box"><div class="content"><campus-bus-list v-for="i in length" :parent-i="i" /></div></div>',
+            template: '<div id="content_box"><div id="header"></div><div class="content"><campus-bus-list v-if="current===0 && ready==1" v-for="i in len" :parent-i="i-1" :parent-list="list[i-1]" @refresh="refresh" @unmounted="unmounted" /><city-bus-list v-if="current===1 && ready==1" v-for="i in len" :parent-i="i-1" :parent-list="list[i-1]" @refresh="refresh" @unmounted="unmounted"/></div><div id="footer"></div></div>',
             data(){
-                listLength = 10;
                 return {
-                    length: listLength
+                    current: 0,
+                    len: 0,
+                    list: [],
+                    ready: 0
+                }
+            },
+            props: ['page'],
+            inject: ['lang'],
+            created(){
+                this.fetchData();
+                this.updateData();
+            },
+            beforeUpdate(){
+                this.current = this.page;
+            },
+            methods:{
+                fetchData: function(){
+                    var _this = this;
+                    if(_this.page==0){
+                        $.getJSON("https://ibus.nsysu.edu.tw/API/RoutePath.aspx?"+Date.now()+"&C=en&T=SC",function(data){
+                            _this.list = data;
+                            _this.len = data.length;
+                            _this.ready = 1;
+                            console.log(data);
+                        });
+                    }else if(_this.page==1 && (_this.lang=="tw" || _this.lang=="cn")){
+                        $.getJSON("https://ibus.nsysu.edu.tw/API/RoutePath.aspx?"+Date.now()+"&T=CT",function(data){
+                            _this.list = data;
+                            _this.len = data.length;
+                            _this.ready = 1;
+                            console.log(_this.list);
+                        });
+                    }else if(_this.page==1 && (_this.lang=="en" || _this.lang=="jp")){
+                        $.getJSON("https://ibus.nsysu.edu.tw/API/RoutePath.aspx?"+Date.now()+"&C=en&T=CT",function(data){
+                            _this.list = data;
+                            _this.len = data.length;
+                            _this.ready = 1;
+                            console.log(_this.list);
+                        });
+                    }
+                },
+                updateData: function(){
+                    var _this = this;
+                    setInterval(function(){
+                        if(_this.page==0){
+                            $.getJSON("https://ibus.nsysu.edu.tw/API/RoutePath.aspx?"+Date.now()+"&C=en&T=SC",function(data){
+                                _this.list = data;
+                                _this.len = data.length;
+                                console.log(data);
+                            });
+                        }else if(_this.page==1 && (_this.lang=="tw" || _this.lang=="cn")){
+                            $.getJSON("https://ibus.nsysu.edu.tw/API/RoutePath.aspx?"+Date.now()+"&T=CT",function(data){
+                                _this.list = data;
+                                _this.len = data.length;
+                                console.log(_this.list);
+                            });
+                        }else if(_this.page==1 && (_this.lang=="en" || _this.lang=="jp")){
+                            $.getJSON("https://ibus.nsysu.edu.tw/API/RoutePath.aspx?"+Date.now()+"&C=en&T=CT",function(data){
+                                _this.list = data;
+                                _this.len = data.length;
+                                console.log(_this.list);
+                            });
+                        }
+                    },15000);
+                },
+                refresh: function(){
+                    this.ready = 0;
+                    this.list = [];
+                    this.len = 0;
+                },
+                unmounted(){
+                    this.ready = 1;
+                    this.$forceUpdate;
                 }
             },
             components:{
                 'campus-bus-list': {
-                    template:'<div class="campus_list shadow" :class="{blur:parentI<5 ? true : false, blinking:parentI==5 ? true : false}"><span class="campus_list_name">{{name}} {{parentI}}</span><span class="campus_list_time">{{time}}</span><br v-if="isPhone"><span class="campus_list_dept">{{dept}}</span><span class="campus_list_arrow"><span class="material-icons">arrow_forward</span></span><span class="campus_list_dest">{{dest}}</span><span class="campus_list_stop" :class="{reded:isRed}">{{stop}}</span></div>',
-                    props:["parentI"],
+                    template:'<div class="campus_list shadow"><table style="width: 100%"><tr><td rowspan="2" style="width: 150px"><span class="campus_list_name">{{name}}</span></td><td><span class="campus_list_dept">{{dept}}</span><span class="campus_list_arrow"><span class="material-icons">arrow_forward</span></span><span class="campus_list_dest">{{dest}}</span><br v-if="isPhone && plate!=\'\'"><span class="campus_list_plate">{{plate}}</span></td></tr><tr><td><span class="campus_list_stop" :class="{reded:isRed}">{{stop}}</span></td></tr></table></div>',
+                    props:["parentI","parentList"],
+                    inject: ['lang','current'],
                     data(){
+                        var lang = this.lang;
+                        var current = this.current;
                         var dict_name = ["校","校","Campus","Campus"];
-                        var dict_dept = ["行政大樓","行政大楼","Administration Building","管理棟"];
-                        var dict_dest = ["H棟宿舍","H棟宿舍","H Dormitory","H ドーミトリ"];
-                        var dict_stop = ["本日未行駛","本日未行驶","Not in service","運休"];
+                        var dict_current = ["目前位置：","当前位置：","Current Stop: ","現在地："];
+                        var listData = this.parentList;
                         return {
-                            name : langFunc(lang,dict_name),
-                            time : "00:00",
-                            dept : langFunc(lang,dict_dept),
-                            dest : langFunc(lang,dict_dest),
-                            stop : langFunc(lang,dict_stop),
-                            isRed : true,
+                            name : langFunc(lang,dict_name)+" "+listData.RouteID,
+                            plate : listData.CarID==null ? "":"["+listData.CarID+"]",
+                            dept : stopNameList[listData.DepartureEn][lang],
+                            dest : stopNameList[listData.DestinationEn][lang],
+                            stop : listData.StopName=="未行駛"? stopNameList[listData.StopName][lang] : langFunc(lang,dict_current)+stopNameList[listData.StopName][lang],
+                            isRed : listData.StopName=="未行駛"?true:false,
                             isPhone : screen.width<700? true : false
                         }
+                    },
+                    beforeUnmount(){
+                        this.$emit("refresh");
+                    },
+                    unmounted(){
+                        this.$emit("unmounted");
+                    }
+                },
+                'city-bus-list':{
+                    template:'<div class="campus_list shadow"><table style="width: 100%"><tr><td rowspan="2" style="width: 150px"><span class="campus_list_name">{{name}}</span></td><td><span class="campus_list_dept">{{dept}}</span><span class="campus_list_arrow"><span class="material-icons">arrow_forward</span></span><span class="campus_list_dest">{{dest}}</span></td></tr><tr><td><span class="campus_list_stop">{{stop}}</span></td></tr></table></div>',
+                    props:["parentI","parentList"],
+                    inject: ['lang','current'],
+                    data(){
+                        var lang = this.lang;
+                        var current = this.current;
+                        var dict_current = ["目前位置：","当前位置：","Current Stop: ","現在地："];
+                        var listData = this.parentList;
+                        return {
+                            name : listData.RouteID,
+                            plate : listData.CarID==null ? "":"["+listData.CarID+"]",
+                            dept : lang=="tw" || lang=="cn"?listData.Departure:listData.DepartureEn,
+                            dest : lang=="tw" || lang=="cn"?listData.Destination:listData.DestinationEn,
+                            stop : listData.StopName,
+                            isPhone : screen.width<700? true : false
+                        }
+                    },
+                    beforeUnmount(){
+                        this.$emit("refresh");
+                    },
+                    unmounted(){
+                        this.$emit("unmounted");
                     }
                 }
             }
         });
 
         app.component('app-navigator',{
-            template: '<div class="navigator shadow"><navigator></navigator></div>',
+            template: '<div class="navigator shadow"><navigator id="navigator" @update="changePage" /></div>',
+            methods:{
+                changePage(val){
+                    this.$emit("update",val);
+                }
+            },
             components:{
                 'navigator': {
-                    template: '<campus-button></campus-button><bus-button></bus-button><timetable-button></timetable-button><config-button></config-button>',
+                    template: '<campus-button @changeToCampus="changePage" /><bus-button @changeToBus="changePage" /><timetable-button @changeToTimetable="changePage" /><config-button @changeToSettings="changePage" />',
+                    methods:{
+                        changePage(val){
+                            this.$emit("update",val);
+                        }
+                    },
                     components: {
                         'campus-button':{
-                            template: '<a href=""><span class="material-icons">school</span><br>{{msg}}</a>',
+                            template: '<a href="" @click.stop.prevent="updatePage"><span class="material-icons">school</span><br>{{msg}}</a>',
+                            inject: ['lang','current'],
                             data(){
+                                var lang = this.lang;
+                                var current = this.current;
                                 var dict = ["校園公車","校园公交","Campus Bus","学内連絡バス"];
                                 return{
                                     msg : langFunc(lang,dict)
                                 }
+                            },
+                            methods:{
+                                updatePage(){
+                                    this.$emit("changeToCampus",0);
+                                }
                             }
                         },
                         'bus-button':{
-                            template: '<a href=""><span class="material-icons">directions_bus</span><br>{{msg}}</a>',
+                            template: '<a href="" @click.stop.prevent="updatePage"><span class="material-icons">directions_bus</span><br>{{msg}}</a>',
+                            inject: ['lang','current'],
                             data(){
+                                var lang = this.lang;
+                                var current = this.current;
                                 var dict = ["市區公車","市区公交","City Bus","市内バス"];
                                 return{
                                     msg : langFunc(lang,dict)
                                 }
+                            },
+                            methods:{
+                                updatePage(){
+                                    this.$emit("changeToBus",1);
+                                }
                             }
                         },
                         'timetable-button':{
-                            template: '<a href=""><span class="material-icons">departure_board</span><br>{{msg}}</a>',
+                            template: '<a href="" @click.stop.prevent="updatePage"><span class="material-icons">departure_board</span><br>{{msg}}</a>',
+                            inject: ['lang','current'],
                             data(){
+                                var lang = this.lang;
+                                var current = this.current;
                                 var dict = ["時刻表","时刻表","Timetable","時刻表"];
                                 return{
                                     msg : langFunc(lang,dict)
                                 }
+                            },
+                            methods:{
+                                updatePage(){
+                                    this.$emit("changeToTimetable",2);
+                                }
                             }
                         },
                         'config-button':{
-                            template: '<a href=""><span class="material-icons">settings</span><br>{{msg}}</a>',
+                            template: '<a href="" @click.stop.prevent="updatePage"><span class="material-icons">settings</span><br>{{msg}}</a>',
+                            inject: ['lang','current'],
                             data(){
+                                var lang = this.lang;
+                                var current = this.current;
                                 var dict = ["設定","设置","Settings","設定"];
                                 return{
                                     msg : langFunc(lang,dict)
+                                }
+                            },
+                            methods:{
+                                updatePage(){
+                                    this.$emit("changeToSettings",3);
                                 }
                             }
                         }
@@ -121,6 +299,9 @@
             }
         });
         app.mount('#app');
+        
+        $("#header").height($(".banner").outerHeight());
+        $("#footer").height($(".navigator").outerHeight());
     </script>
 </body>
 </html>
