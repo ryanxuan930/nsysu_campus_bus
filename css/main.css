@@ -31,6 +31,8 @@ html{
     width: 100%;
     margin: 0;
     padding: 10px;
+    position: fixed;
+    top: 0;
     background-color: rgb(10,132,255);
     z-index: 10;
 }
@@ -50,14 +52,14 @@ html{
 }
 .campus_list_name{
     text-align: center;
-    padding: 1px 5px;
+    padding: 5px;
     border: rgb(10,132,255) 2px solid;
     color: rgb(10,132,255);
     border-radius: 5px;
     display: inline-block;
     width: 130px;
 }
-.campus_list_name, .campus_list_time, .campus_list_dest{
+.campus_list_name, .campus_list_plate, .campus_list_dest{
     margin-right: 5%;
 }
 .campus_list_arrow{
