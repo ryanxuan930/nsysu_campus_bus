@@ -78,10 +78,12 @@
             },
             props: ["appLang","currentPage"],
             methods: {
-                fetchData(){
-                    var _this = this, i;
+                fetchStatus(){
                     _this.current_page = _this.currentPage,
                     _this.app_lang = _this.appLang,
+                },
+                fetchCampus(){
+                    var _this = this, i;
                     $.getJSON("https://ibus.nsysu.edu.tw/API/RoutePath.aspx?"+Date.now()+"&C=en&T=SC",function(data){
                         var nameList = {"tw": "校","cn": "校","en": "Campus","jp": "Campus"};
                         for(i=0; i<data.length; i++){
@@ -93,6 +95,9 @@
                         _this.campus_list = data;
                         _this.campus_len = data.length;
                     });
+                },
+                fetchCity(){
+                    var _this = this, i;
                     $.getJSON("https://ibus.nsysu.edu.tw/API/RoutePath.aspx?"+Date.now()+"&T=CT",function(data){
                         var newList={};
                         for(i=0; i<data.length; i++){
@@ -114,6 +119,11 @@
                         }
                         _this.city_list_en = newList;
                     });
+                }
+                fetchData(){
+                    this.fetchStatus();
+                    this.fetchCampus();
+                    this,fetchCity();
                 },
                 changeLang(val){
                     this.$emit("changeLang",val);
