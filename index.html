@@ -79,8 +79,8 @@
             props: ["appLang","currentPage"],
             methods: {
                 fetchStatus(){
-                    _this.current_page = _this.currentPage,
-                    _this.app_lang = _this.appLang,
+                    this.current_page = this.currentPage;
+                    this.app_lang = this.appLang;
                 },
                 fetchCampus(){
                     var _this = this, i;
@@ -119,11 +119,11 @@
                         }
                         _this.city_list_en = newList;
                     });
-                }
+                },
                 fetchData(){
                     this.fetchStatus();
                     this.fetchCampus();
-                    this,fetchCity();
+                    this.fetchCity();
                 },
                 changeLang(val){
                     this.$emit("changeLang",val);
@@ -133,11 +133,14 @@
                 this.fetchData();
             },
             beforeUpdate(){
-                this.app_lang = this.appLang;
-                this.current_page = this.currentPage;
+                this.fetchStatus();
             },
             updated(){
-                this.fetchData();
+                if(this.current_page==0){
+                    this.fetchCampus();
+                }else{
+                    this.fetchCity();
+                }
             },
             components: {
                 'campus-bus-list': {
