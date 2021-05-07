@@ -58,19 +58,31 @@ hr{
 }
 .campus_list_name{
     text-align: center;
-    padding: 5px;
     border: rgb(10,132,255) 2px solid;
     color: rgb(10,132,255);
     border-radius: 5px;
     display: inline-block;
     width: 130px;
 }
-.campus_list_name, .campus_list_plate, .campus_list_dest{
+.campus_list_name div{
+    padding: 5px;
+}
+.campus_list_name, .campus_list_dest{
     margin-right: 5%;
+}
+.campus_list_plate{
+    border: 0;
+    margin: 0;
+    color: white;
+    background-color: rgb(10,132,255);
 }
 .campus_list_arrow{
     color: #424242;
     margin: 0 10px;
+}
+.a_tag{
+    text-decoration: none;
+    color: #424242;
 }
 
 .settings_box{
@@ -78,6 +90,12 @@ hr{
     padding: 20px;
     background-color: white;
     font-size: 16px;
+}
+
+.settings_box select{
+    padding: 5px;
+    width: 100%;
+    background-color: #f5f5f5;
 }
 
 .navigator{
