@@ -64,16 +64,20 @@
             }
         });
         app.component('app-content',{
-            template: '<div id="content_box"><div id="header">{{current_page}}</div><campus-bus-list v-if="current_page===0" v-for="i in campus_len"  :campus-data="campus_list[i-1]" /><city-bus-list v-if="current_page===1 && (app_lang==\'tw\' || app_lang==\'cn\')" v-for="i in city_len"  :city-data="city_list_ch[i-1]" /><city-bus-list v-if="current_page===1 && (app_lang==\'en\' || app_lang==\'jp\')" v-for="i in city_len"  :city-data="city_list_en[i-1]" /><settings v-if="current_page===3" :app-lang="app_lang" @changeLang="changeLang" /><div id="footer"></div></div>',
+            template: '<div id="content_box"><div id="header">{{current_page}}</div><campus-bus-list v-if="current_page===0" v-for="i in campus_len"  :campus-data="campus_list[i-1]" /><city-bus-list v-if="current_page===1 && (app_lang==\'tw\' || app_lang==\'cn\')" v-for="i in city_len"  :city-data="city_list_ch[i-1]" /><city-bus-list v-if="current_page===1 && (app_lang==\'en\' || app_lang==\'jp\')" v-for="i in city_len"  :city-data="city_list_en[i-1]" /><timetable v-if="current_page===2 && (app_lang==\'tw\' || app_lang==\'cn\')" v-for="i in timetable_len"  :timetable-data="timetable_ch[i-1]" /><timetable v-if="current_page===2 && (app_lang==\'en\' || app_lang==\'jp\')" v-for="i in timetable_len"  :timetable-data="timetable_en[i-1]" /><settings v-if="current_page===3" :app-lang="app_lang" @changeLang="changeLang" /><div id="footer"></div></div>',
             data(){
                 return {
                     current_page: 0,
+                    page_temp: 0,
                     app_lang: this.appLang,
                     campus_len: 0,
                     campus_list: [],
                     city_list_ch: [],
                     city_len: 0,
                     city_list_en: [],
+                    timetable_ch: [],
+                    timetable_len: 0,
+                    timetable_en: []
                 }
             },
             props: ["appLang","currentPage"],
@@ -105,7 +109,9 @@
                             newList[i]["dept"] = data[i].Departure;
                             newList[i]["dest"] = data[i].Destination;
                             newList[i]["name"] = data[i].Name;
+                            newList[i]["id"] = data[i].CarID.split(",",1)[0];
                         }
+                        console.log(newList);
                         _this.city_list_ch = newList;
                         _this.city_len = data.length;
                     });
@@ -116,43 +122,80 @@
                             newList[i]["dept"] = data[i].DepartureEn;
                             newList[i]["dest"] = data[i].DestinationEn;
                             newList[i]["name"] = data[i].NameEn;
+                            newList[i]["id"] = data[i].CarID.split(",",1)[0];
                         }
                         _this.city_list_en = newList;
                     });
                 },
-                fetchData(){
-                    this.fetchStatus();
-                    this.fetchCampus();
-                    this.fetchCity();
-                },
                 changeLang(val){
                     this.$emit("changeLang",val);
+                },
+                fetchTimetable(){
+                    var _this = this, i;
+                    $.getJSON("https://ibus.nsysu.edu.tw/API/RouteTimeBoardName.aspx?1620312644823"+Date.now(),function(data){
+                        var newList={};
+                        console.log(data);
+                        for(i=0; i<data.Datas.length; i++){
+                            newList[i]={};
+                            newList[i]["id"] = data.Datas[i].TimeBoardID;
+                            newList[i]["name"] = data.Datas[i].Name;
+                        }
+                        _this.timetable_ch = newList;
+                        _this.timetable_len = data.Datas.length;
+                    });
+                    $.getJSON("https://ibus.nsysu.edu.tw/API/RouteTimeBoardName.aspx?C=en",function(data){
+                        var newList={};
+                        for(i=0; i<data.Datas.length; i++){
+                            newList[i]={};
+                            newList[i]["id"] = data.Datas[i].TimeBoardID;
+                            newList[i]["name"] = data.Datas[i].NameEn;
+                        }
+                        _this.timetable_en = newList;
+                    });
                 }
             },
             created(){
-                this.fetchData();
+                this.fetchCampus();
+                this.page_temp = this.current_page;
             },
             beforeUpdate(){
                 this.fetchStatus();
             },
             updated(){
-                if(this.current_page==0){
-                    this.fetchCampus();
-                }else{
-                    this.fetchCity();
+                if(this.current_page != this.page_temp){
+                    if(this.current_page==0){
+                        this.fetchCampus();
+                    }else if(this.current_page==1){
+                        this.fetchCity();
+                    }else{
+                        this.fetchTimetable();
+                    }
+                    this.page_temp = this.current_page;
                 }
             },
             components: {
                 'campus-bus-list': {
-                    template:'<div class="campus_list shadow"><table style="width: 100%"><tr><td rowspan="2" style="width: 150px"><span class="campus_list_name">{{campusData.NameEn}}</span></td><td><span class="campus_list_dept">{{campusData.DepartureEn}}</span><span class="campus_list_arrow"><span class="material-icons">arrow_forward</span></span><span class="campus_list_dest">{{campusData.DestinationEn}}</span><br v-if="campusData.CarID!=\'\' "><span class="campus_list_plate">{{campusData.CarID}}</span></td></tr><tr><td><span class="campus_list_stop" :class="{reded: campusData.StopName==\'未行駛\'?true:false}">{{campusData.StopName}}</span></td></tr></table></div>',
+                    template:'<a class="a_tag" href=""><div class="campus_list shadow"><table style="width: 100%"><tr><td rowspan="2" style="width: 150px"><span class="campus_list_name"><div>{{campusData.NameEn}}</div><div class="campus_list_plate" v-if="campusData.CarID!=null">{{campusData.CarID}}</div></span></td><td><span class="campus_list_dept">{{campusData.DepartureEn}}</span><span class="campus_list_arrow"><span class="material-icons">arrow_forward</span></span><span class="campus_list_dest">{{campusData.DestinationEn}}</span></td></tr><tr><td><span class="campus_list_stop" :class="{reded: campusData.StopName==\'未行駛\' || campusData.StopName==\'未行驶\' || campusData.StopName==\'Not in service\' || campusData.StopName==\'運休\'?true:false}">{{campusData.StopName}}</span></td></tr></table></div></a>',
                     props:["campusData"],
                 },
                 'city-bus-list': {
-                    template:'<div class="campus_list shadow"><table style="width: 100%"><tr><td style="width: 150px"><span class="campus_list_name">{{cityData.name}}</span></td><td><span class="campus_list_dept">{{cityData.dept}}</span><span class="campus_list_arrow"><span class="material-icons">arrow_forward</span></span><span class="campus_list_dest">{{cityData.dest}}</span></td></tr></table></div>',
+                    template:'<a class="a_tag" href=""><div class="campus_list shadow"><table style="width: 100%"><tr><td style="width: 150px"><span class="campus_list_name"><div>{{cityData.name}}</div><div class="campus_list_plate" v-if="cityData.id!=null">{{cityData.id}}</div></span></td><td><span class="campus_list_dept">{{cityData.dept}}</span><span class="campus_list_arrow"><span class="material-icons">arrow_forward</span></span><span class="campus_list_dest">{{cityData.dest}}</span></td></tr></table></div></a>',
                     props:["cityData"],
                 },
+                'timetable': {
+                    template:'<a class="a_tag" href="" @click.prevent="openTimetable(timetableData.id)"><div class="campus_list shadow">{{timetableData.name}}</div></a>',
+                    props:["timetableData"],
+                    methods: {
+                        openTimetable(id){
+                            $.post("https://ibus.nsysu.edu.tw/API/RouteTimeBoardPath.aspx?" + Date.now(),{"TBID": id},function(data){
+                                var imagePath = JSON.parse(data);
+                                window.open(imagePath.TimeBoardImagePath);
+                            });
+                        }
+                    }
+                },
                 'settings': {
-                    template: '<div class="settings_box shadow"><h3>語言 Language</h3><select v-model="language" @change="changeLang"><option value="tw">繁體</option><option value="cn">简体</option><option value="en">English</option><option value="jp">日本語</option></select></div>',
+                    template: '<div class="settings_box shadow"><h3>語言 Language</h3><hr><select v-model="language" @change="changeLang"><option value="tw">繁體</option><option value="cn">简体</option><option value="en">English</option><option value="jp">日本語</option></select></div>',
                     props:["appLang"],
                     data(){
                         return {
