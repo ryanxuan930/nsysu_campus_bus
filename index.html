@@ -187,7 +187,7 @@
                     const approachingList = {"tw":"接近", "cn": "接近", "en":"Approaching", "jp": "接近"};
                     $.post("https://ibus.nsysu.edu.tw/API/RoutePathStop.aspx",{C: langCode, RID: val},function(data){
                         var list = JSON.parse(data);
-                        var newList={};
+                        var newList={}, temp;
                         for(i=0; i<list.length; i++){
                             newList[i]={};
                             newList[i]["id"] = list[i].StopID;
@@ -197,7 +197,8 @@
                                 newList[i]["name"] = list[i].Name;
                             }
                             newList[i]["no"] = list[i].SeqNo;
-                            if(list[i].ArrivedTime.indexOf(":") < 0){
+                            temp = list[i].ArrivedTime;
+                            if(temp.indexOf(":") < 0){
                                 switch(list[i].ArrivedTime){
                                     case "進站中":
                                         newList[i]["arrival"] = approachingList[_this.app_lang];
