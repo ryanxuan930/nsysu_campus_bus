@@ -249,8 +249,14 @@
             },
             components: {
                 'campus-bus-list': {
-                    template:'<a class="a_tag" href=""><div class="campus_list shadow"><table style="width: 100%"><tr><td rowspan="2" style="width: 150px"><span class="campus_list_name"><div>{{campusData.NameEn}}</div><div class="campus_list_plate" v-if="campusData.CarID!=null">{{campusData.CarID}}</div></span></td><td><span class="campus_list_dept">{{campusData.DepartureEn}}</span><span class="campus_list_arrow"><span class="material-icons">arrow_forward</span></span><span class="campus_list_dest">{{campusData.DestinationEn}}</span></td></tr><tr><td><span class="campus_list_stop" :class="{reded: campusData.StopName==\'未行駛\' || campusData.StopName==\'未行驶\' || campusData.StopName==\'Not in service\' || campusData.StopName==\'運休\'?true:false}">{{campusData.StopName}}</span></td></tr></table></div></a>',
+                    template:'<a class="a_tag" href=""><div class="campus_list shadow" @click.prevent="routeData(0)"><table style="width: 100%"><tr><td rowspan="2" style="width: 150px"><span class="campus_list_name"><div>{{campusData.NameEn}}</div><div class="campus_list_plate" v-if="campusData.CarID!=null">{{campusData.CarID}}</div></span></td><td><span class="campus_list_dept">{{campusData.DepartureEn}}</span><span class="campus_list_arrow"><span class="material-icons">arrow_forward</span></span><span class="campus_list_dest">{{campusData.DestinationEn}}</span></td></tr><tr><td><span class="campus_list_stop" :class="{reded: campusData.StopName==\'未行駛\' || campusData.StopName==\'未行驶\' || campusData.StopName==\'Not in service\' || campusData.StopName==\'運休\'?true:false}">{{campusData.StopName}}</span></td></tr></table></div></a>',
                     props:["campusData"],
+                    methods: {
+                        routeData(route){
+                            alert("目前無資料");
+                            //this.$emit("getCampusRoute",route);
+                        }
+                    
                 },
                 'city-bus-list': {
                     template:'<a class="a_tag" href="" @click.prevent="routeData(cityData.route)"><div class="campus_list shadow"><table style="width: 100%"><tr><td style="width: 150px"><span class="campus_list_name"><div>{{cityData.name}}</div><div class="campus_list_plate" v-if="cityData.id!=null">{{cityData.id}}</div></span></td><td><span class="campus_list_dept">{{cityData.dept}}</span><span class="campus_list_arrow"><span class="material-icons">arrow_forward</span></span><span class="campus_list_dest">{{cityData.dest}}</span></td></tr></table></div></a>',
