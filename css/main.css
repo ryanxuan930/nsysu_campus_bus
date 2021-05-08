@@ -60,7 +60,7 @@ hr{
     text-align: center;
     border: rgb(10,132,255) 2px solid;
     color: rgb(10,132,255);
-    border-radius: 5px;
+    border-radius: 10px;
     display: inline-block;
     width: 130px;
 }
@@ -84,7 +84,6 @@ hr{
     text-decoration: none;
     color: #424242;
 }
-
 .settings_box{
     margin: 10px;
     padding: 20px;
