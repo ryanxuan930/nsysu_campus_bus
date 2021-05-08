@@ -19,7 +19,7 @@
     <div id="app"></div>
     <script>
     function startLaoding(){
-        $(".loading_background").fadeIn(1000);
+        $(".loading_background").fadeIn(500);
     }
     function endLaoding(){
         $(".loading_background").fadeOut(1000);
@@ -197,7 +197,7 @@
                                 newList[i]["name"] = list[i].Name;
                             }
                             newList[i]["no"] = list[i].SeqNo;
-                            if(list[i].ArrivedTime.indexOf(":") == -1){
+                            if(list[i].ArrivedTime.indexOf(":") < 0){
                                 switch(list[i].ArrivedTime){
                                     case "進站中":
                                         newList[i]["arrival"] = approachingList[_this.app_lang];
