@@ -60,7 +60,7 @@ hr{
     text-align: center;
     border: rgb(10,132,255) 2px solid;
     color: rgb(10,132,255);
-    border-radius: 10px;
+    border-radius: 5px;
     display: inline-block;
     width: 130px;
 }
@@ -90,7 +90,29 @@ hr{
     background-color: white;
     font-size: 16px;
 }
-
+.route_title{
+    text-align: center;
+    margin: 5px;
+}
+.route_tab{
+    margin: 0;
+    border: rgb(10,132,255) 2px solid;
+    padding: 5px;
+    background-color: white;
+    color: rgb(10,132,255);
+    width: 50%;
+    box-sizing: border-box;
+    cursor: pointer;
+}
+.route_tab_active{
+    background-color:rgb(10,132,255);
+    color: white;
+}
+.route_content{
+    padding: 5px 0;
+    background-color: #f9f9f9;
+    box-shadow: inset 0px 0px 5px #BDBDBD;
+}
 .settings_box select{
     padding: 5px;
     width: 100%;
