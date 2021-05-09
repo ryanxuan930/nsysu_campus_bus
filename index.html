@@ -56,7 +56,7 @@
                     setInterval(function(){
                         _this.signal+=1;
                         console.log(_this.signal);
-                    },15000);
+                    },20000);
                 }
             },
             beforeCreate(){
@@ -109,6 +109,7 @@
                     content_in_len: 0,
                     route_data: [],
                     route_page: 0,
+                    timer:0,
                 }
             },
             props: ["appLang","currentPage","signal"],
@@ -188,6 +189,67 @@
                         _this.timetable_en = newList;
                     });
                 },
+                /*
+                fetchCampusRoute(val){
+                    var _this = this, langCode;
+                    startLaoding();
+                    if(this.app_lang=="tw" || this.app_lang=="tw"){
+                        langCode = "ch";
+                    }else{
+                        langCode = "en";
+                    }
+                    const aboutList = {"tw":"約", "cn": "约", "en":"About", "jp": "約"};
+                    const timeList = {"tw":"分", "cn": "分", "en":"min", "jp": "分"};
+                    const arrivingList = {"tw":"即將進站", "cn": "即将进站", "en":"Arriving", "jp": "到着します"};
+                    const approachingList = {"tw":"接近", "cn": "接近", "en":"Approaching", "jp": "接近"};
+                    const departureList = {"tw":"已離站", "cn": "已离站", "en":"Departure", "jp": "発車した"};
+                    $.post("https://ibus.nsysu.edu.tw/API/RoutePathStop.aspx?C="+langCode,{CID: langCode, RID: val},function(data){
+                        var list = JSON.parse(data);
+                        var newListA={}, newListB={},temp, target, j=0, k=0;
+                        for(i=0; i<list.length; i++){
+                            if(list[i].isGoBack=="Y"){
+                                newListA[j] = {};
+                                target = newListA[j];
+                                j++;
+                            }else{
+                                newListB[k] = {};
+                                target = newListB[k];
+                                k++;
+                            }
+                            target["id"] = list[i].StopID;
+                            if(langCode=="en"){
+                                target["name"] = list[i].NameEn;
+                            }else{
+                                target["name"] = list[i].Name;
+                            }
+                            target["no"] = list[i].SeqNo;
+                            temp = list[i].ArrivedTime;
+                            if(temp==null){
+                                target["arrival"] = departureList[_this.app_lang];
+                            }else if(temp.indexOf(":") < 0){
+                                switch(list[i].ArrivedTime){
+                                    case "進站中":
+                                        target["arrival"] = approachingList[_this.app_lang];
+                                        break;
+                                    case "將到站":
+                                        target["arrival"] = arrivingList[_this.app_lang];
+                                        break;
+                                    default:
+                                    target["arrival"] = aboutList[_this.app_lang] + " " + list[i].ArrivedTime + " " + timeList[_this.app_lang];
+                                }
+                            }else{
+                                target["arrival"] = list[i].ArrivedTime;
+                            }
+                            target["time"] = list[i].RealArrivedTime;
+                            endLaoding();
+                        }
+                        _this.content_list_outbound = newListA;
+                        _this.content_list_inbound = newListB;
+                        _this.content_out_len = j;
+                        _this.content_in_len = k;
+                        _this.$emit("changePage",4);
+                    });
+                },*/
                 fetchCityRoute(val){
                     var _this = this, langCode;
                     startLaoding();
@@ -260,6 +322,7 @@
                 this.fetchCampus();
                 this.fetchCity();
                 this.page_temp = this.current_page;
+                this.timer = this.signal;
             },
             beforeUpdate(){
                 this.fetchStatus();
@@ -274,6 +337,15 @@
                         this.fetchTimetable();
                     }
                     this.page_temp = this.current_page;
+                }else if(this.signal != this.timer){
+                    if(this.current_page==0){
+                        this.fetchCampus();
+                    }else if(this.current_page==1){
+                        this.fetchCity();
+                    }else{
+                        this.fetchTimetable();
+                    }
+                    this.timer = this.signal;
                 }
             },
             components: {
