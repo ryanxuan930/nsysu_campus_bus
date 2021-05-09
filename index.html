@@ -53,7 +53,7 @@
                 },
                 updateSignal(){
                     var _this = this;
-                    setTimeout(function(){
+                    setInterval(function(){
                         _this.signal+=1;
                         console.log(_this.signal);
                     },15000);
@@ -66,10 +66,6 @@
                 this.signal = 0;
                 this.updateSignal();
             },
-            updated(){
-                console.log("updated");
-                this.updateSignal();
-            }
         });
         app.component('app-title',{
             template: '<div class="banner shadow"><div id="title">{{title}}</div></div>',
