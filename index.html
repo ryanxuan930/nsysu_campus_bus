@@ -89,7 +89,7 @@
             }
         });
         app.component('app-content',{
-            template: '<div id="content_box"><div id="header"></div><campus-bus-list v-if="current_page===0" v-for="i in campus_len"  :campus-data="campus_list[i-1]" /><city-bus-list v-if="current_page===1 && (app_lang==\'tw\' || app_lang==\'cn\')" v-for="i in city_len"  :city-data="city_list_ch[i-1]" @getCityRoute="fetchCityRoute" @routeData="routeData" /><city-bus-list v-if="current_page===1 && (app_lang==\'en\' || app_lang==\'jp\')" v-for="i in city_len"  :city-data="city_list_en[i-1]" @getCityRoute="fetchCityRoute" @routeData="routeData" /><timetable v-if="current_page===2 && (app_lang==\'tw\' || app_lang==\'cn\')" v-for="i in timetable_len"  :timetable-data="timetable_ch[i-1]" /><timetable v-if="current_page===2 && (app_lang==\'en\' || app_lang==\'jp\')" v-for="i in timetable_len"  :timetable-data="timetable_en[i-1]" /><settings v-if="current_page===3" :app-lang="app_lang" @changeLang="changeLang" /><route-content v-if="current_page===4" @changePage="changePage" :content-data-out="content_list_outbound" :content-data-in="content_list_inbound" :content-out-len="content_out_len" :content-in-len="content_in_len" :route-data="route_data" :route-page="route_page" @changeRoutePage="routePage" /><div id="footer"></div></div>',
+            template: '<div id="content_box"><div id="header"></div><campus-bus-list v-if="current_page===0" v-for="i in campus_len"  :campus-data="campus_list[i-1]" @routeData="routeData" @getCampusRoute="fetchCampusRoute" /><city-bus-list v-if="current_page===1 && (app_lang==\'tw\' || app_lang==\'cn\')" v-for="i in city_len"  :city-data="city_list_ch[i-1]" @getCityRoute="fetchCityRoute" @routeData="routeData" /><city-bus-list v-if="current_page===1 && (app_lang==\'en\' || app_lang==\'jp\')" v-for="i in city_len"  :city-data="city_list_en[i-1]" @getCityRoute="fetchCityRoute" @routeData="routeData" /><timetable v-if="current_page===2 && (app_lang==\'tw\' || app_lang==\'cn\')" v-for="i in timetable_len"  :timetable-data="timetable_ch[i-1]" /><timetable v-if="current_page===2 && (app_lang==\'en\' || app_lang==\'jp\')" v-for="i in timetable_len"  :timetable-data="timetable_en[i-1]" /><settings v-if="current_page===3" :app-lang="app_lang" @changeLang="changeLang" /><route-content v-if="current_page===4" @changePage="changePage" :content-data-out="content_list_outbound" :content-data-in="content_list_inbound" :content-out-len="content_out_len" :content-in-len="content_in_len" :route-data="route_data" :route-page="route_page" @changeRoutePage="routePage" /><div id="footer"></div></div>',
             data(){
                 return {
                     current_page: 0,
@@ -127,6 +127,8 @@
                             data[i].DestinationEn = stopNameList[data[i].DestinationEn][_this.appLang];
                             data[i].StopName = stopNameList[data[i].StopName][_this.appLang];
                             data[i].NameEn = nameList[_this.appLang]+" "+data[i].RouteID;
+                            data[i].RouteID = data[i].RouteID;
+
                         }
                         _this.campus_list = data;
                         _this.campus_len = data.length;
@@ -189,7 +191,6 @@
                         _this.timetable_en = newList;
                     });
                 },
-                /*
                 fetchCampusRoute(val){
                     var _this = this, langCode;
                     startLaoding();
@@ -203,11 +204,11 @@
                     const arrivingList = {"tw":"即將進站", "cn": "即将进站", "en":"Arriving", "jp": "到着します"};
                     const approachingList = {"tw":"接近", "cn": "接近", "en":"Approaching", "jp": "接近"};
                     const departureList = {"tw":"已離站", "cn": "已离站", "en":"Departure", "jp": "発車した"};
-                    $.post("https://ibus.nsysu.edu.tw/API/RoutePathStop.aspx?C="+langCode,{CID: langCode, RID: val},function(data){
+                    $.post("https://ibus.nsysu.edu.tw/API/RoutePathStop.aspx?C="+langCode,{CID: _this.route_data.plate, RID: val},function(data){
                         var list = JSON.parse(data);
                         var newListA={}, newListB={},temp, target, j=0, k=0;
                         for(i=0; i<list.length; i++){
-                            if(list[i].isGoBack=="Y"){
+                            if(list[i].isGoBack!="Y"){
                                 newListA[j] = {};
                                 target = newListA[j];
                                 j++;
@@ -224,9 +225,7 @@
                             }
                             target["no"] = list[i].SeqNo;
                             temp = list[i].ArrivedTime;
-                            if(temp==null){
-                                target["arrival"] = departureList[_this.app_lang];
-                            }else if(temp.indexOf(":") < 0){
+                            if(temp.indexOf(":") < 0){
                                 switch(list[i].ArrivedTime){
                                     case "進站中":
                                         target["arrival"] = approachingList[_this.app_lang];
@@ -234,11 +233,12 @@
                                     case "將到站":
                                         target["arrival"] = arrivingList[_this.app_lang];
                                         break;
+                                    case "已離站":
+                                        target["arrival"] = departureList[_this.app_lang];
+                                        break;
                                     default:
                                     target["arrival"] = aboutList[_this.app_lang] + " " + list[i].ArrivedTime + " " + timeList[_this.app_lang];
                                 }
-                            }else{
-                                target["arrival"] = list[i].ArrivedTime;
                             }
                             target["time"] = list[i].RealArrivedTime;
                             endLaoding();
@@ -249,7 +249,7 @@
                         _this.content_in_len = k;
                         _this.$emit("changePage",4);
                     });
-                },*/
+                },
                 fetchCityRoute(val){
                     var _this = this, langCode;
                     startLaoding();
@@ -267,7 +267,7 @@
                         var list = JSON.parse(data);
                         var newListA={}, newListB={},temp, target, j=0, k=0;
                         for(i=0; i<list.length; i++){
-                            if(list[i].isGoBack=="Y"){
+                            if(list[i].isGoBack!="Y"){
                                 newListA[j] = {};
                                 target = newListA[j];
                                 j++;
@@ -350,12 +350,13 @@
             },
             components: {
                 'campus-bus-list': {
-                    template:'<a class="a_tag" href=""><div class="campus_list shadow" @click.prevent="routeData(0)"><table style="width: 100%"><tr><td rowspan="2" style="width: 150px"><span class="campus_list_name"><div>{{campusData.NameEn}}</div><div class="campus_list_plate" v-if="campusData.CarID!=null">{{campusData.CarID}}</div></span></td><td><span class="campus_list_dept">{{campusData.DepartureEn}}</span><span class="campus_list_arrow"><span class="material-icons">arrow_forward</span></span><span class="campus_list_dest">{{campusData.DestinationEn}}</span></td></tr><tr><td><span class="campus_list_stop" :class="{reded: campusData.StopName==\'未行駛\' || campusData.StopName==\'未行驶\' || campusData.StopName==\'Not in service\' || campusData.StopName==\'運休\'?true:false}">{{campusData.StopName}}</span></td></tr></table></div></a>',
+                    template:'<a class="a_tag" href=""><div class="campus_list shadow" @click.prevent="routeData(campusData.RouteID)"><table style="width: 100%"><tr><td rowspan="2" style="width: 150px"><span class="campus_list_name"><div>{{campusData.NameEn}}</div><div class="campus_list_plate" v-if="campusData.CarID!=null">{{campusData.CarID}}</div></span></td><td><span class="campus_list_dept">{{campusData.DepartureEn}}</span><span class="campus_list_arrow"><span class="material-icons">arrow_forward</span></span><span class="campus_list_dest">{{campusData.DestinationEn}}</span></td></tr><tr><td><span class="campus_list_stop" :class="{reded: campusData.StopName==\'未行駛\' || campusData.StopName==\'未行驶\' || campusData.StopName==\'Not in service\' || campusData.StopName==\'運休\'?true:false}">{{campusData.StopName}}</span></td></tr></table></div></a>',
                     props:["campusData"],
                     methods: {
                         routeData(route){
-                            alert("目前無資料");
-                            //this.$emit("getCampusRoute",route);
+                            var data = {"name": this.campusData.NameEn, "dept": this.campusData.DepartureEn, "dest": this.campusData.DestinationEn, "plate": this.campusData.CarID}
+                            this.$emit("routeData",data);
+                            this.$emit("getCampusRoute",route);
                         }
                     }
                 },
@@ -364,9 +365,9 @@
                     props:["cityData"],
                     methods: {
                         routeData(route){
-                            this.$emit("getCityRoute",route);
-                            var data = {"name": this.cityData.name, "dept": this.cityData.dept, "dest": this.cityData.dest}
+                            var data = {"name": this.cityData.name, "dept": this.cityData.dept, "dest": this.cityData.dest, "plate": this.cityData.id}
                             this.$emit("routeData",data);
+                            this.$emit("getCityRoute",route);
                         }
                     }
                 },
