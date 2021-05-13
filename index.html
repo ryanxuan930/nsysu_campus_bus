@@ -394,7 +394,7 @@
                     }
                 },
                 'settings': {
-                    template: '<div class="settings_box shadow"><h3>語言 Language</h3><hr><select v-model="language" @change="changeLang"><option value="tw">繁體中文</option><option value="cn">简体中文</option><option value="en">English</option><option value="jp">日本語</option></select></div><div class="settings_box shadow">目前簡體中文和日本語因學校伺服器提供之資料沒有這些語言，待未來逐步完成翻譯後上線。Simplified Chinese and Japanese are not supported in some pages, because the data provided by NSYSU are only available in Traditional Chinese and English.</div>',
+                    template: '<div class="settings_box shadow"><h3>語言 Language</h3><hr><select v-model="language" @change="changeLang"><option value="tw">繁體中文</option><option value="cn">简体中文</option><option value="en">English</option><option value="jp">日本語</option></select></div><div class="settings_box shadow">目前部分頁面内容不支援簡體中文和日文。<br>目前部分页面内容不支援简体中文和日语。<br>Simplified Chinese and Japanese are not available in some pages.<br>中国語(簡体字)と日本語は、一部のページに対応していません。</div>',
                     props:["appLang"],
                     data(){
                         return {
@@ -408,7 +408,7 @@
                     }
                 },
                 'route-content': {
-                    template: '<div class="settings_box shadow"><h2 class="route_title">{{routeData.name}}</h2><div><button class="route_tab" :class="{route_tab_active: (this.route_page==0?true : false)}" @click="changeRoutePage(0)">{{routeData.dept}}</button><button class="route_tab" @click="changeRoutePage(1)" :class="{route_tab_active: (this.route_page==1?true : false)}">{{routeData.dest}}</button></div><div class="route_content"><route-list v-if="route_page==0" v-for="i in content_out_len" :content-data="content_out[i-1]" /><route-list v-if="route_page==1" v-for="i in content_in_len" :content-data="content_in[i-1]" /></div></div>',
+                    template: '<div class="settings_box shadow"><h2 class="route_title">{{routeData.name}}</h2><table class="route_tab"><tr><td :class="{route_tab_active: (this.route_page==0?true : false)}"><button @click="changeRoutePage(0)">{{routeData.dept}}</button></td><td :class="{route_tab_active: (this.route_page==1?true : false)}"><button @click="changeRoutePage(1)">{{routeData.dest}}</button></td></tr></table><div class="route_content"><route-list v-if="route_page==0" v-for="i in content_out_len" :content-data="content_out[i-1]" /><route-list v-if="route_page==1" v-for="i in content_in_len" :content-data="content_in[i-1]" /></div></div>',
                     props:["contentDataOut","contentDataIn","contentOutLen","contentInLen","routeData","routePage"],
                     data(){
                         return {
