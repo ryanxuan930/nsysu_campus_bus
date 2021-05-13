@@ -354,9 +354,14 @@
                     props:["campusData"],
                     methods: {
                         routeData(route){
-                            var data = {"name": this.campusData.NameEn, "dept": this.campusData.DepartureEn, "dest": this.campusData.DestinationEn, "plate": this.campusData.CarID}
-                            this.$emit("routeData",data);
-                            this.$emit("getCampusRoute",route);
+                            if(this.campusData.StopName=='未行駛' || this.campusData.StopName=='未行驶' || this.campusData.StopName=='Not in service' || this.campusData.StopName=='運休'){
+                                alert("無資料 No Data")
+                            }else{
+                                var data = {"name": this.campusData.NameEn, "dept": this.campusData.DepartureEn, "dest": this.campusData.DestinationEn, "plate": this.campusData.CarID}
+                                this.$emit("routeData",data);
+                                this.$emit("getCampusRoute",route);
+                            }
+                            
                         }
                     }
                 },
