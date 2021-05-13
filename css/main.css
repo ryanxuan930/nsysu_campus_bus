@@ -95,16 +95,24 @@ hr{
     margin: 5px;
 }
 .route_tab{
+    width: 100%;
+    table-layout: fixed;
+    height: max-content;
+    margin: 0;
+    border: 0;
+}
+.route_tab button{
     margin: 0;
     border: rgb(10,132,255) 2px solid;
     padding: 5px;
     background-color: white;
     color: rgb(10,132,255);
-    width: 50%;
+    width: 100%;
+    height: 100%;
     box-sizing: border-box;
     cursor: pointer;
 }
-.route_tab_active{
+.route_tab_active button{
     background-color:rgb(10,132,255);
     color: white;
 }
