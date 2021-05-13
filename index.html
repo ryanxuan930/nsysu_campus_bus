@@ -389,7 +389,9 @@
                         openTimetable(id){
                             $.post("https://ibus.nsysu.edu.tw/API/RouteTimeBoardPath.aspx?" + Date.now(),{"TBID": id},function(data){
                                 var imagePath = JSON.parse(data);
-                                window.open(imagePath.TimeBoardImagePath);
+                                if(!window.open(imagePath.TimeBoardImagePath)){
+                                    location.href=imagePath.TimeBoardImagePath;
+                                }
                             });
                         }
                     }
