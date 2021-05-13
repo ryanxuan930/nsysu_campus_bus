@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <link rel="preconnect" href="https://fonts.gstatic.com"> 
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/main.css">
@@ -122,10 +122,15 @@
                     var _this = this, i;
                     $.getJSON("https://ibus.nsysu.edu.tw/API/RoutePath.aspx?"+Date.now()+"&C=en&T=SC",function(data){
                         var nameList = {"tw": "校","cn": "校","en": "Campus","jp": "Campus"};
+                        var statusList = {"tw": "目前位置：","cn": "当前位置：","en": "Current Stop: ","jp": "現在地："};
                         for(i=0; i<data.length; i++){
                             data[i].DepartureEn = stopNameList[data[i].DepartureEn][_this.appLang];
                             data[i].DestinationEn = stopNameList[data[i].DestinationEn][_this.appLang];
-                            data[i].StopName = stopNameList[data[i].StopName][_this.appLang];
+                            if(data[i].StopName=="未行駛"){
+                                data[i].StopName = stopNameList[data[i].StopName][_this.appLang];
+                            }else{
+                                data[i].StopName = statusList[_this.appLang] + stopNameList[data[i].StopName][_this.appLang];
+                            }
                             data[i].NameEn = nameList[_this.appLang]+" "+data[i].RouteID;
                             data[i].RouteID = data[i].RouteID;
 
@@ -301,8 +306,8 @@
                                 target["arrival"] = list[i].ArrivedTime;
                             }
                             target["time"] = list[i].RealArrivedTime;
-                            endLaoding();
                         }
+                        endLaoding();
                         _this.content_list_outbound = newListA;
                         _this.content_list_inbound = newListB;
                         _this.content_out_len = j;
@@ -403,7 +408,7 @@
                     }
                 },
                 'route-content': {
-                    template: '<div class="settings_box shadow"><h2 class="route_title">{{routeData.name}}</h2><button class="route_tab" :class="{route_tab_active: (this.route_page==0?true : false)}" @click="changeRoutePage(0)">{{routeData.dept}}</button><button class="route_tab" @click="changeRoutePage(1)" :class="{route_tab_active: (this.route_page==1?true : false)}">{{routeData.dest}}</button><div class="route_content"><route-list v-if="route_page==0" v-for="i in content_out_len" :content-data="content_out[i-1]" /><route-list v-if="route_page==1" v-for="i in content_in_len" :content-data="content_in[i-1]" /></div></div>',
+                    template: '<div class="settings_box shadow"><h2 class="route_title">{{routeData.name}}</h2><div><button class="route_tab" :class="{route_tab_active: (this.route_page==0?true : false)}" @click="changeRoutePage(0)">{{routeData.dept}}</button><button class="route_tab" @click="changeRoutePage(1)" :class="{route_tab_active: (this.route_page==1?true : false)}">{{routeData.dest}}</button></div><div class="route_content"><route-list v-if="route_page==0" v-for="i in content_out_len" :content-data="content_out[i-1]" /><route-list v-if="route_page==1" v-for="i in content_in_len" :content-data="content_in[i-1]" /></div></div>',
                     props:["contentDataOut","contentDataIn","contentOutLen","contentInLen","routeData","routePage"],
                     data(){
                         return {
