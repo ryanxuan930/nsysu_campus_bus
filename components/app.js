@@ -132,6 +132,9 @@ app.component('app-content',{
             $.getJSON("https://ibus.nsysu.edu.tw/API/RoutePath.aspx?"+Date.now()+"&C=en&T=SC",function(data){
                 var nameList = {"tw": "校","cn": "校","en": "Campus","jp": "Campus"};
                 var statusList = {"tw": "目前位置：","cn": "当前位置：","en": "Current Stop: ","jp": "現在地："};
+                if(data.message){
+                    alert("伺服器停止運作 Server is not working");
+                }
                 for(i=0; i<data.length; i++){
                     data[i].DepartureEn = stopNameList[data[i].DepartureEn][_this.appLang];
                     data[i].DestinationEn = stopNameList[data[i].DestinationEn][_this.appLang];
