@@ -20,23 +20,29 @@
     </div>
     <div id="app"></div>
     <script>
-    function startLaoding(){
-        $(".loading_background").fadeIn(500);
-    }
-    function endLaoding(){
-        $(".loading_background").fadeOut(1000);
-    }
-    const stopNameList = {
-        "Administration Square":{"tw":"行政大樓","cn":"行政大楼","en":"Administration Building","jp":"行政棟"},
-        "Administration Building":{"tw":"行政大樓","cn":"行政大楼","en":"Administration Building","jp":"行政棟"},
-        "Dorm H":{"tw":"H棟宿舍","cn":"H栋宿舍","en":"H Dormitory","jp":"H ドーミトリー"},
-        "H Dormitory":{"tw":"H棟宿舍","cn":"H栋宿舍","en":"H Dormitory","jp":"H ドーミトリー"},
-        "Activity Center":{"tw":"活動中心","cn":"活动中心","en":"Activity Center","jp":"アクティビティセンター"},
-        "Wuling Road":{"tw":"武嶺路口","cn":"武岭路口","en":"Wuling Road","jp":"武嶺交差点"},
-        "College of Liberal Arts":{"tw":"文學院","cn":"文学院","en":"College of Liberal Arts","jp":"文学院"},
-        "MRT Sizihwan Station (LRT Hamasen Station)":{"tw":"捷運西子灣站 (輕軌哈瑪星站)","cn":"捷运西子湾站(轻轨哈玛星站)","en":"MRT Sihziwan Station (LRT Hamasen Station)","jp":"MRT西子湾駅(LRT哈瑪星駅)"},
-        "未行駛":{"tw":"未行駛","cn":"未行驶","en":"Not in service","jp":"運休"},
-    };
+        function startLaoding(){
+            $(".loading_background").fadeIn(500);
+        }
+        function endLaoding(){
+            $(".loading_background").fadeOut(1000);
+        }
+        const stopNameList = {
+            "Administration Square":{"tw":"行政大樓","cn":"行政大楼","en":"Administration Building","jp":"行政棟"},
+            "Administration Building":{"tw":"行政大樓","cn":"行政大楼","en":"Administration Building","jp":"行政棟"},
+            "Dorm H":{"tw":"H棟宿舍","cn":"H栋宿舍","en":"H Dormitory","jp":"H ドーミトリー"},
+            "H Dormitory":{"tw":"H棟宿舍","cn":"H栋宿舍","en":"H Dormitory","jp":"H ドーミトリー"},
+            "Activity Center":{"tw":"活動中心","cn":"活动中心","en":"Activity Center","jp":"アクティビティセンター"},
+            "Wuling Road":{"tw":"武嶺路口","cn":"武岭路口","en":"Wuling Road","jp":"武嶺交差点"},
+            "College of Liberal Arts":{"tw":"文學院","cn":"文学院","en":"College of Liberal Arts","jp":"文学院"},
+            "MRT Sizihwan Station (LRT Hamasen Station)":{"tw":"捷運西子灣站 (輕軌哈瑪星站)","cn":"捷运西子湾站(轻轨哈玛星站)","en":"MRT Sihziwan Station (LRT Hamasen Station)","jp":"MRT西子湾駅(LRT哈瑪星駅)"},
+            "未行駛":{"tw":"未行駛","cn":"未行驶","en":"Not in service","jp":"運休"},
+        };
+        const aboutList = {"tw":"約", "cn": "约", "en":"About", "jp": "約"};
+        const timeList = {"tw":"分", "cn": "分", "en":"min", "jp": "分"};
+        const approachingList = {"tw":"即將進站", "cn": "即将进站", "en":"Arriving", "jp": "到着します"};
+        const arrivingList = {"tw":"接近", "cn": "接近", "en":"Approaching", "jp": "接近"};
+        const departureList = {"tw":"已離站", "cn": "已离站", "en":"Departure", "jp": "発車した"};
+        //vue app
         const app = Vue.createApp({
             template: '<app-title :title-lang="lang_code" /><app-content :app-lang="lang_code" :current-page="current_page" :signal="signal" @changeLang="changeLang" @changePage="changePage" /><app-navigator :nav-lang="lang_code" @changePage="changePage" />',
             data(){
@@ -68,6 +74,7 @@
                 this.updateSignal();
             },
         });
+        //App Title
         app.component('app-title',{
             template: '<div class="banner shadow"><div id="title">{{title}}</div></div>',
             data(){
@@ -89,6 +96,7 @@
                 this.getLang();
             }
         });
+        //App Content
         app.component('app-content',{
             template: '<div id="content_box"><div id="header"></div><campus-bus-list v-if="current_page===0" v-for="i in campus_len"  :campus-data="campus_list[i-1]" @routeData="routeData" @getCampusRoute="fetchCampusRoute" /><city-bus-list v-if="current_page===1 && (app_lang==\'tw\' || app_lang==\'cn\')" v-for="i in city_len"  :city-data="city_list_ch[i-1]" @getCityRoute="fetchCityRoute" @routeData="routeData" /><city-bus-list v-if="current_page===1 && (app_lang==\'en\' || app_lang==\'jp\')" v-for="i in city_len"  :city-data="city_list_en[i-1]" @getCityRoute="fetchCityRoute" @routeData="routeData" /><timetable v-if="current_page===2 && (app_lang==\'tw\' || app_lang==\'cn\')" v-for="i in timetable_len"  :timetable-data="timetable_ch[i-1]" /><timetable v-if="current_page===2 && (app_lang==\'en\' || app_lang==\'jp\')" v-for="i in timetable_len"  :timetable-data="timetable_en[i-1]" /><settings v-if="current_page===3" :app-lang="app_lang" @changeLang="changeLang" /><route-content v-if="current_page===4" @changePage="changePage" :content-data-out="content_list_outbound" :content-data-in="content_list_inbound" :content-out-len="content_out_len" :content-in-len="content_in_len" :route-data="route_data" :route-page="route_page" @changeRoutePage="routePage" /><div id="footer"></div></div>',
             data(){
@@ -212,11 +220,6 @@
                     }else{
                         langCode = "en";
                     }
-                    const aboutList = {"tw":"約", "cn": "约", "en":"About", "jp": "約"};
-                    const timeList = {"tw":"分", "cn": "分", "en":"min", "jp": "分"};
-                    const arrivingList = {"tw":"即將進站", "cn": "即将进站", "en":"Arriving", "jp": "到着します"};
-                    const approachingList = {"tw":"接近", "cn": "接近", "en":"Approaching", "jp": "接近"};
-                    const departureList = {"tw":"已離站", "cn": "已离站", "en":"Departure", "jp": "発車した"};
                     $.post("https://ibus.nsysu.edu.tw/API/RoutePathStop.aspx?C="+langCode,{CID: _this.route_data.plate, RID: val},function(data){
                         var list = JSON.parse(data);
                         var newListA={}, newListB={},temp, target, j=0, k=0;
@@ -270,11 +273,6 @@
                     }else{
                         langCode = "en";
                     }
-                    const aboutList = {"tw":"約", "cn": "约", "en":"About", "jp": "約"};
-                    const timeList = {"tw":"分", "cn": "分", "en":"min", "jp": "分"};
-                    const arrivingList = {"tw":"即將進站", "cn": "即将进站", "en":"Arriving", "jp": "到着します"};
-                    const approachingList = {"tw":"接近", "cn": "接近", "en":"Approaching", "jp": "接近"};
-                    const departureList = {"tw":"已離站", "cn": "已离站", "en":"Departure", "jp": "発車した"};
                     $.post("https://ibus.nsysu.edu.tw/API/RoutePathStop.aspx",{C: langCode, RID: val},function(data){
                         var list = JSON.parse(data);
                         var newListA={}, newListB={},temp, target, j=0, k=0;
@@ -460,6 +458,7 @@
                 }
             }
         });
+        //App Navigator
         app.component('app-navigator',{
             template :'<div class="navigator shadow"><a href="" @click.stop.prevent="changePage(0)"><span class="material-icons">school</span><br>{{campus}}</a><a href="" @click.stop.prevent="changePage(1)"><span class="material-icons">directions_bus</span><br>{{city}}</a><a href="" @click.stop.prevent="changePage(2)"><span class="material-icons">departure_board</span><br>{{timetable}}</a><a href="" @click.stop.prevent="changePage(3)"><span class="material-icons">settings</span><br>{{settings}}</a></div>',
             data(){
