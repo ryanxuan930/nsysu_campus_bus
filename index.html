@@ -150,13 +150,13 @@
                                 newList[j]["dept"] = data[i].Departure;
                                 newList[j]["dest"] = data[i].Destination;
                                 newList[j]["name"] = data[i].Name;
-                                newList[j]["id"] = data[i].CarID
+                                newList[j]["id"] = data[i].CarID.split(",",1)[0];
                                 newList[j]["route"] = data[i].RouteID;
                                 j++;
                             }
                         }
                         _this.city_list_ch = newList;
-                        _this.city_len = data.length;
+                        _this.city_len = j;
                         endLaoding();
                     });
                     $.getJSON("https://raw.githubusercontent.com/nsysu-code-club/nsysu-bus/main/bus_info_data_en.json",function(data){
@@ -167,7 +167,7 @@
                                 newList[j]["dept"] = data[i].DepartureEn;
                                 newList[j]["dest"] = data[i].DestinationEn;
                                 newList[j]["name"] = data[i].NameEn;
-                                newList[j]["id"] = data[i].CarID;
+                                newList[j]["id"] = data[i].CarID.split(",",1)[0];
                                 newList[j]["route"] = data[i].RouteID;
                                 j++;
                             }
@@ -382,7 +382,7 @@
                     props:["cityData"],
                     methods: {
                         routeData(route){
-                            var data = {"name": this.cityData.name, "dept": this.cityData.dept, "dest": this.cityData.dest, "plate": this.cityData.id}
+                            var data = {"name": this.cityData.name, "dept": this.cityData.dept, "dest": this.cityData.dest, "plate": this.cityData.id};
                             this.$emit("routeData",data);
                             this.$emit("getCityRoute",route);
                         }
