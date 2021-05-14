@@ -55,6 +55,7 @@
             methods:{
                 changeLang(val){
                     this.lang_code=val;
+                    localStorage.langCode=val;
                 },
                 changePage(val){
                     this.current_page=val;
@@ -70,6 +71,9 @@
                 startLaoding();
             },
             created(){
+                if(localStorage.langCode){
+                    this.lang_code=localStorage.langCode;
+                }
                 this.signal = 0;
                 this.updateSignal();
             },
@@ -215,12 +219,7 @@
                 fetchCampusRoute(val){
                     var _this = this, langCode;
                     _this.current_route = val;
-                    if(this.app_lang=="tw" || this.app_lang=="tw"){
-                        langCode = "ch";
-                    }else{
-                        langCode = "en";
-                    }
-                    $.post("https://ibus.nsysu.edu.tw/API/RoutePathStop.aspx?C="+langCode,{CID: _this.route_data.plate, RID: val},function(data){
+                    $.post("https://ibus.nsysu.edu.tw/API/RoutePathStop.aspx?C=en",{CID: _this.route_data.plate, RID: val},function(data){
                         var list = JSON.parse(data);
                         var newListA={}, newListB={},temp, target, j=0, k=0;
                         for(i=0; i<list.length; i++){
@@ -234,11 +233,7 @@
                                 k++;
                             }
                             target["id"] = list[i].StopID;
-                            if(langCode=="en"){
-                                target["name"] = list[i].NameEn;
-                            }else{
-                                target["name"] = list[i].Name;
-                            }
+                            target["name"] = stopNameList[list[i].NameEn][_this.appLang];
                             target["no"] = list[i].SeqNo;
                             temp = list[i].ArrivedTime;
                             if(temp.indexOf(":") < 0){
