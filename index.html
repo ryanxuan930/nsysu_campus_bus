@@ -142,29 +142,35 @@
                 },
                 fetchCity(){
                     var _this = this, i;
-                    $.getJSON("https://ibus.nsysu.edu.tw/API/RoutePath.aspx?"+Date.now()+"&T=CT",function(data){
-                        var newList={};
+                    $.getJSON("https://raw.githubusercontent.com/nsysu-code-club/nsysu-bus/main/bus_info_data_zh.json",function(data){
+                        var newList={}, j=0;
                         for(i=0; i<data.length; i++){
-                            newList[i]={};
-                            newList[i]["dept"] = data[i].Departure;
-                            newList[i]["dest"] = data[i].Destination;
-                            newList[i]["name"] = data[i].Name;
-                            newList[i]["id"] = data[i].CarID.split(",",1)[0];
-                            newList[i]["route"] = data[i].RouteID;
+                            if(data[i].RouteID>49){
+                                newList[j]={};
+                                newList[j]["dept"] = data[i].Departure;
+                                newList[j]["dest"] = data[i].Destination;
+                                newList[j]["name"] = data[i].Name;
+                                newList[j]["id"] = data[i].CarID.split(",",1)[0];
+                                newList[j]["route"] = data[i].RouteID;
+                                j++;
+                            }
                         }
                         _this.city_list_ch = newList;
                         _this.city_len = data.length;
                         endLaoding();
                     });
-                    $.getJSON("https://ibus.nsysu.edu.tw/API/RoutePath.aspx?"+Date.now()+"&C=en&T=CT",function(data){
-                        var newList={};
+                    $.getJSON("https://raw.githubusercontent.com/nsysu-code-club/nsysu-bus/main/bus_info_data_en.json",function(data){
+                        var newList={}, j=0;
                         for(i=0; i<data.length; i++){
-                            newList[i]={};
-                            newList[i]["dept"] = data[i].DepartureEn;
-                            newList[i]["dest"] = data[i].DestinationEn;
-                            newList[i]["name"] = data[i].NameEn;
-                            newList[i]["id"] = data[i].CarID.split(",",1)[0];
-                            newList[i]["route"] = data[i].RouteID;
+                            if(data[i].RouteID>49){
+                                newList[j]={};
+                                newList[j]["dept"] = data[i].DepartureEn;
+                                newList[j]["dest"] = data[i].DestinationEn;
+                                newList[j]["name"] = data[i].NameEn;
+                                newList[j]["id"] = data[i].CarID.split(",",1)[0];
+                                newList[j]["route"] = data[i].RouteID;
+                                j++;
+                            }
                         }
                         _this.city_list_en = newList;
                     });
