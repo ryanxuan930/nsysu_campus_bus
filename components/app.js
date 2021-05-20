@@ -35,7 +35,7 @@ function startLaoding(){
     $(".loading_background").fadeIn(500);
 }
 function endLaoding(){
-    $(".loading_background").fadeOut(1000);
+    $(".loading_background").fadeOut(500);
 }
 //vue app
 const app = Vue.createApp({
