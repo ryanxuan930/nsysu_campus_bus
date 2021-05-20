@@ -62,9 +62,6 @@ const app = Vue.createApp({
             },10000);
         }
     },
-    beforeCreate(){
-        startLaoding();
-    },
     created(){
         if(localStorage.langCode){
             this.lang_code=localStorage.langCode;
@@ -168,7 +165,6 @@ app.component('app-content',{
                 }
                 _this.city_list_ch = newList;
                 _this.city_len = j;
-                endLaoding();
             });
             $.getJSON("https://raw.githubusercontent.com/nsysu-code-club/nsysu-bus/main/bus_info_data_en.json",function(data){
                 var newList={}, j=0;
