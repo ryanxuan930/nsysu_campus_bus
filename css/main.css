@@ -49,7 +49,60 @@ hr{
     font-size: 18px;
     color: white;
 }
-
+.marquee {
+    height: 50px;
+    overflow: hidden;
+    position: relative;
+    background: white;
+    color: #424242;
+}
+        
+.marquee div {
+    position: absolute;
+    white-space:nowrap;
+    height: 100%;
+    width: fit-content;
+    margin: 0;
+    line-height: 50px;
+    text-align: left;
+    -moz-transform: translateX(100%);
+    -webkit-transform: translateX(100%);
+    transform: translateX(100%);
+    -moz-animation: scroll-left 40s linear infinite;
+    -webkit-animation: scroll-left 40s linear infinite;
+    animation: scroll-left 40s linear infinite;
+}
+        
+@-moz-keyframes scroll-left {
+    0% {
+        -moz-transform: translateX(100%);
+    }
+    100% {
+        -moz-transform: translateX(-100%);
+    }
+}
+        
+@-webkit-keyframes scroll-left {
+    0% {
+        -webkit-transform: translateX(100%);
+    }
+    100% {
+        -webkit-transform: translateX(-100%);
+    }
+}
+        
+@keyframes scroll-left {
+    0% {
+        -moz-transform: translateX(100%);
+        -webkit-transform: translateX(100%);
+        transform: translateX(100%);
+    }
+    100% {
+        -moz-transform: translateX(-100%);
+        -webkit-transform: translateX(-100%);
+        transform: translateX(-100%);
+    }
+}
 .campus_list{
     margin: 10px;
     padding: 15px;
