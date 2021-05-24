@@ -354,7 +354,7 @@ app.component('app-content',{
     },
     components: {
         'marquee-box': {
-            template: '<div class="marquee shadow"><div>搭公車時請全程配戴口罩，勸導不聽者，最高可罰15,000元。Face mask must be worn when taking the bus. Those refuse to comply will be fined up to 15,000 NT dollars. バスを乗る際はマスクを着用し、違反者には最高NT$7,500元の罰金が科されます。</div></div>'
+            template: '<div class="marquee shadow"><div>搭公車時請全程配戴口罩，勸導不聽者，最高可罰15,000元。Face mask must be worn when taking the bus. Those refuse to comply will be fined up to 15,000 NT dollars. バスを乗る際はマスクを着用し、違反者には最高NT$15,500元の罰金が科されます。</div></div>'
         },
         'campus-bus-list': {
             template:'<a class="a_tag" href=""><div class="campus_list shadow" @click.prevent="routeData(campusData.RouteID)"><table style="width: 100%"><tr><td rowspan="2" style="width: 150px"><span class="campus_list_name"><div>{{campusData.NameEn}}</div><div class="campus_list_plate" v-if="campusData.CarID!=null">{{campusData.CarID}}</div></span></td><td><span class="campus_list_dept">{{campusData.DepartureEn}}</span><span class="campus_list_arrow"><span class="material-icons">arrow_forward</span></span><span class="campus_list_dest">{{campusData.DestinationEn}}</span></td></tr><tr><td><span class="campus_list_stop" :class="{reded: campusData.StopName==\'未行駛\' || campusData.StopName==\'未行驶\' || campusData.StopName==\'Not in service\' || campusData.StopName==\'運休\'?true:false}">{{campusData.StopName}}</span></td></tr></table></div></a>',
